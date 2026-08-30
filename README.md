@@ -1,22 +1,15 @@
-<div align="center">
-# LangChain ReAct Agent · 生物医药慢病随访智能助手
-**基于 LangChain + ReAct 范式 + RAG 检索增强的生物医药慢病随访智能助手**
-[![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://www.python.org/)
-&nbsp;
-[![LangChain](https://img.shields.io/badge/LangChain-0.3-green)](https://www.langchain.com/)
-&nbsp;
-[![LangGraph](https://img.shields.io/badge/LangGraph-0.2-orange)](https://github.com/langchain-ai/langgraph)
-&nbsp;
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.40-red)](https://streamlit.io/)
-&nbsp;
-[![License](https://img.shields.io/badge/License-MIT-yellow)](./LICENSE)
-</div>
----
-## 项目简介
-基于 LangChain 框架实现的 **ReAct（Reasoning + Acting）Agent**，集成生物医药知识库 RAG 检索增强、多工具调用和动态提示词切换。
-系统能够根据用户意图自动判断任务类型（慢病知识问答 / 患者健康随访报告生成），调用合适的工具和生物医药知识库完成推理，并通过 Streamlit 流式界面实时展示 Agent 的思考与执行过程。
 
-> ⚠️ **免责声明**：本项目仅用于技术演示科普，输出内容**不能替代执业医师的诊疗建议，不可直接用于临床诊断**。
+
+# LangChain ReAct Agent
+
+ ## 基于 **LangChain** 的本地知识库上传与**RAG**检索增强的慢病随访智能助手
+系统能够根据用户意图自动判断任务类型（慢病知识问答 / 患者健康随访报告生成），调用合适的工具和生物医药知识库完成推理，并通过 Streamlit 流式界面实时展示 Agent 的思考与执行过程。
+- 在网页端上传 `txt` 文件，自动切分后写入 FAISS‑CPU 向量库
+- 在网页端以聊天形式提问，基于知识库内容进行检索增强回答（RAG） 
+- 支持 会话历史查看，流式思维链输出
+- 技术栈：Python / Streamlit / LangChain / Chroma / Embeddings / Qwen ChatModel
+
+---
 
 ## ✨ 功能一览
 ### 1) 知识库更新服务（Upload）
@@ -46,39 +39,21 @@
 ### 5）效果展示
 <div align="center">
 <img src="assets/chat1.png" alt="问答界面" width="85%">
-*图1. 普通问答 — RAG 检索生物医药知识库回复*
+
 &nbsp;
 <img src="assets/chat2.png" alt="工具调用" width="85%">
-*图2. Agent 工具调用 — 实时展示推理与工具执行链路*
+
 &nbsp;
 <img src="assets/chat3.png" alt="工具调用详情" width="85%">
-*图3. 工具调用详情 — 多步推理与慢病随访报告生成*
+
 &nbsp;
-</div>
-## 技术架构
-<div align="center">
-用户输入 (Streamlit)
-│
-▼
-┌─────────────────────────────────────────┐
-│            ReAct Agent                   │
-│                                          │
-│  ┌──────────┐    ┌──────────────────┐   │
-│  │ Thought  │───→│     Action       │   │
-│  │ (推理)    │    │ (工具调用 / RAG)  │   │
-│  └──────────┘    └────────┬─────────┘   │
-│       ↑                   │              │
-│       └─── Observation ◄──┘              │
-│                                          │
-│   Middleware: 工具监控・动态提示词切换    │
-└─────────────────────────────────────────┘
-│                │              │
-▼                ▼              ▼
-┌──────────┐   ┌────────────┐  ┌──────────┐
-│   RAG    │   │   Tools    │  │  Prompt  │
-│  FAISS   │   │患者随访数据 │  │  动态切换  │
-│ 向量检索  │   │ 报告生成   │  │  模板管理  │
-└──────────┘   └────────────┘  └──────────┘
+
+
+
+
+
+
+
 </div>
 ### 核心特性
 | 特性 | 说明 |
@@ -142,45 +117,32 @@ streamlit run app.py
 - *高血压药物漏服后应当如何处理？*（慢病知识咨询）
 - *请根据患者数据生成一份慢病随访健康评估报告*（报告生成 + 工具调用）
 
-## 项目结构LangChain‑ReAct‑Agent‑Biomedical/
-│
-├── agent/                          # Agent 核心
-│   ├── react_agent.py              #   ReAct Agent 主逻辑（流式执行）
-│   └── tools/
-│       ├── agent_tools.py          #   工具函数（RAG检索/患者数据/随访报告）
-│       └── middleware.py           #   中间件（工具监控/动态提示词切换）
-│
-├── rag/                            # RAG 检索增强
-│   ├── vector_store.py             #   FAISS 向量库 · 文档加载 · MD5 去重
-│   └── rag_service.py              #   RAG 检索 → LLM 总结服务
-│
-├── model/
-│   └── factory.py                  # 模型工厂（ChatTongyi + DashScopeEmbedding）
-│
-├── config/                         # YAML 配置文件
-│   ├── agent.yml                   #   Agent 行为与工具配置
-│   ├── faiss.yml                   #   向量库与检索参数
-│   ├── prompts.yml                 #   提示词模板
-│   └── rag.yml                     #   RAG 模型与参数
-│
-├── prompts/                        # 提示词模板
-│   ├── main_prompt.txt             #   普通问答 System Prompt
-│   ├── rag_summarize.txt           #   RAG 总结 Prompt
-│   └── report_prompt.txt           #   随访报告生成 System Prompt
-│
-├── utils/                          # 工具函数
-│   ├── config_handler.py           #   YAML 配置加载
-│   ├── file_handler.py             #   文件解析（PDF/TXT）
-│   ├── logger_handler.py           #   日志管理
-│   ├── path_tool.py                #   路径工具
-│   └── prompt_loader.py            #   提示词加载
-│
-├── data/                           # 生物医药知识库文档
-├── faiss_index/                    # FAISS向量索引目录（不上传GitHub）
-├── assets/                         # 效果展示截图
-├── app.py                          # Streamlit 应用入口
-├── requirements.txt
-└── README.md
+## 项目结构
+
+|目录/文件|说明|
+|---|---|
+|`agent/`|Agent 核心模块|
+|`agent/react_agent.py`|ReAct Agent 主逻辑（流式执行）|
+|`agent/tools/agent_tools.py`|工具函数（RAG检索/患者数据/随访报告）|
+|`agent/tools/middleware.py`|中间件（工具监控/动态提示词切换）|
+|`rag/`|RAG 检索增强模块|
+|`rag/vector_store.py`|FAISS 向量库 · 文档加载 · MD5 去重|
+|`rag/rag_service.py`|RAG 检索 → LLM 总结服务|
+|`model/factory.py`|模型工厂（ChatTongyi + DashScopeEmbedding）|
+|`config/`|YAML 配置文件|
+|`config/agent.yml`|Agent 行为与工具配置|
+|`config/faiss.yml`|向量库与检索参数|
+|`config/prompts.yml`|提示词模板|
+|`config/rag.yml`|RAG 模型与参数|
+|`prompts/`|提示词模板文件夹|
+|`utils/`|通用工具函数|
+|`data/`|生物医药知识库文档|
+|`faiss_index/`|FAISS向量索引目录（运行后生成）|
+|`assets/`|效果展示截图|
+|`app.py`|Streamlit 应用入口|
+|`requirements.txt`|项目依赖清单|
+|`README.md`|项目说明文档|
+
 ## 配置说明
 
 项目通过 `config/` 目录下的 YAML 文件统一管理配置：
